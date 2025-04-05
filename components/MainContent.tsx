@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,35 @@ export default function MainContent() {
   const [minutes, setMinutes] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [showRSVPModal, setShowRSVPModal] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
+  
+  const carouselImages = [
+    {
+      src: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3",
+      alt: "Wedding couple"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3",
+      alt: "Wedding rings"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1519741347686-c1e0aadf4611?ixlib=rb-4.0.3",
+      alt: "Wedding celebration"
+    }
+  ];
+  
+  const nextSlide = useCallback(() => {
+    setCurrentSlide((prevSlide) => 
+      prevSlide === carouselImages.length - 1 ? 0 : prevSlide + 1
+    );
+  }, [carouselImages.length]);
+  
+  useEffect(() => {
+    const interval = setInterval(nextSlide, 5000);
+    return () => clearInterval(interval);
+  }, [nextSlide]);
 
   useEffect(() => {
     const weddingDate = new Date("2025-06-21T00:00:00");
@@ -49,6 +78,36 @@ export default function MainContent() {
 
     return () => clearInterval(timer);
   }, []);
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStart - touchEnd > 50) {
+      // Swipe left
+      const nextSlideIndex = currentSlide === carouselImages.length - 1 ? 0 : currentSlide + 1;
+      goToSlide(nextSlideIndex);
+    }
+
+    if (touchStart - touchEnd < -50) {
+      // Swipe right
+      const nextSlideIndex = currentSlide === 0 ? carouselImages.length - 1 : currentSlide - 1;
+      goToSlide(nextSlideIndex);
+    }
+
+    // Reset values
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
 
   return (
     <div className="min-h-screen bg-sage-50">
@@ -84,50 +143,51 @@ export default function MainContent() {
 
           {/* Right Side - Images */}
           <div className="w-full md:w-[75%]">
-            <div className="grid grid-cols-3 gap-3 md:gap-6">
-              {/* First Image */}
-              <div className="flex flex-col">
-                <div className="overflow-hidden rounded-t-full bg-gray-200">
-                  <div className="relative h-[350px] w-full md:h-[450px] lg:h-[550px]">
-                    <Image
-                      src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3"
-                      alt="Wedding couple dancing"
-                      fill
-                      sizes="(max-width: 768px) 20vw, 20vw"
-                      className="object-cover object-center grayscale"
-                    />
+            {/* Desktop Images */}
+            <div className="hidden md:grid grid-cols-3 gap-3 md:gap-6">
+              {carouselImages.map((image, index) => (
+                <div key={index} className="flex flex-col">
+                  <div className="overflow-hidden rounded-t-full">
+                    <div className="relative h-[350px] w-full md:h-[450px] lg:h-[550px]">
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        sizes="(max-width: 768px) 20vw, 20vw"
+                        className="object-cover object-center grayscale"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Second Image */}
-              <div className="flex flex-col">
-                <div className="overflow-hidden rounded-t-full bg-gray-200">
-                  <div className="relative h-[350px] w-full md:h-[450px] lg:h-[550px]">
-                    <Image
-                      src="https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3"
-                      alt="Wedding couple"
-                      fill
-                      sizes="(max-width: 768px) 20vw, 20vw"
-                      className="object-cover object-center grayscale"
-                    />
+              ))}
+            </div>
+            
+            {/* Mobile Carousel */}
+            <div className="md:hidden relative">
+              {/* Carousel container */}
+              <div 
+                className="relative overflow-hidden"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                {carouselImages.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`overflow-hidden rounded-t-full transition-opacity duration-1000 ease-in-out ${
+                      currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0 absolute inset-0'
+                    }`}
+                  >
+                    <div className="relative h-[550px] w-full">
+                      <Image
+                        src={image.src}
+                        alt={image.alt}
+                        fill
+                        className="object-cover object-center grayscale"
+                      />
+                    </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Third Image */}
-              <div className="flex flex-col">
-                <div className="overflow-hidden rounded-t-full bg-gray-200">
-                  <div className="relative h-[350px] w-full md:h-[450px] lg:h-[550px]">
-                    <Image
-                      src="https://images.unsplash.com/photo-1519741347686-c1e0aadf4611?ixlib=rb-4.0.3"
-                      alt="Wedding couple"
-                      fill
-                      sizes="(max-width: 768px) 20vw, 20vw"
-                      className="object-cover object-center grayscale"
-                    />
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
@@ -137,7 +197,7 @@ export default function MainContent() {
       {/* Our Story Section */}
       <section className="bg-white py-12">
         <div className="container mx-auto max-w-[1440px] px-4">
-          <h2 className="mb-3 text-center font-script text-[140px] font-light tracking-wide text-sage-800 leading-[1] mb-8">
+          <h2 className="mb-3 text-center font-script text-[70px] md:text-[140px] font-light tracking-wide text-sage-800 leading-[1] mb-8">
             Our Story
           </h2>
           <div className="mx-auto mb-16 max-w-4xl text-center font-primary text-sage-500">
