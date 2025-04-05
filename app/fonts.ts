@@ -26,6 +26,13 @@ export const scriptFont = localFont({
   variable: '--font-script',
 })
 
+// Update the script font to use Wild-Magnolia
+export const gorgeousFont = localFont({
+  src: './fonts/gorgeous-serif.otf',
+  display: 'swap',
+  variable: '--font-gorgeous',
+})
+
 // Add Optima font with different weights
 export const primaryFont = localFont({
   src: [

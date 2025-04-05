@@ -54,6 +54,15 @@ const config: Config = {
         'sage-800': '#2D382D',
         'sage-900': '#151A15',
       },
+      fontFamily: {
+        primary: ['var(--font-primary)'],
+        script: ['var(--font-script)'],
+        headings: ['var(--font-headings)'],
+        gorgeous: ['var(--font-gorgeous)'],
+      },
+      animation: {
+        'spin-slow': 'spin 8s linear infinite',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
