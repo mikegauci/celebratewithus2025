@@ -53,10 +53,10 @@ export default function MainContent() {
   return (
     <div className="min-h-screen bg-sage-50">
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-[#f8faf8] py-6">
+      <section className="relative min-h-screen bg-[#f8faf8] py-10">
         <div className="container mx-auto max-w-[1440px] flex min-h-[80vh] flex-col items-center px-4 md:min-h-[90vh] md:flex-row">
           {/* Left Side - Text */}
-          <div className="mb-12 flex w-full flex-col justify-center md:mb-0 md:w-[25%] md:pr-8">
+          <div className="mb-12 flex w-full text-center flex-col justify-center md:mb-0 md:w-[25%] md:pr-8 mt-8">
             <h1 className="flex flex-col space-y-10 font-primary text-5xl font-thin tracking-wide text-[#4C5D46] md:text-7xl lg:text-6xl">
               ROBERTA
               <div className="font-script text-4xl font-light tracking-widest text-gray-500 md:text-5xl lg:text-6xl">
@@ -65,17 +65,18 @@ export default function MainContent() {
               MICHAEL
             </h1>
             <div className="mt-20 space-y-2 mb-2">
-              <h2 className="font-primary text-2xl font-light tracking-[0.25em] text-gray-500 md:text-3xl">
+              <h2 className="font-primary text-2xl font-light text-gray-500 md:text-3xl">
                 June 21st, 2025
               </h2>
-              <p className="font-primary text-xl font-light tracking-[0.2em] text-gray-500 md:text-2xl">
+              <p className="font-primary text-xl font-light text-gray-500 md:text-2xl" style={{ letterSpacing: '1px' }}>
                 Celebrate with us!
               </p>
             </div>
             {/* RSVP Button */}
             <Button
               onClick={() => setShowRSVPModal(true)}
-              className="px-10 py-3 bg-sage-600 text-white rounded-none border-none text-lg font-light tracking-widest transition-all hover:bg-sage-700 shadow-md hover:shadow-lg"
+              className="px-10 py-3 bg-sage-600 text-white rounded-full border-none text-lg font-light tracking-widest transition-all hover:bg-sage-700 shadow-md hover:shadow-lg"
+              style={{ width: '210px', margin: '20px auto 0' }}
             >
               RSVP
             </Button>
@@ -397,8 +398,8 @@ export default function MainContent() {
                 rel="noopener noreferrer"
                 className="inline-block"
               >
-                <Button className="px-10 py-3 bg-sage-600 text-white rounded-none border-none text-lg font-light tracking-widest transition-all hover:bg-sage-700 shadow-md hover:shadow-lg">
-                  GET DIRECTIONS
+                <Button className="px-10 py-3 bg-sage-600 text-white rounded-full border-none text-lg font-light tracking-widest transition-all hover:bg-sage-700 shadow-md hover:shadow-lg">
+                  Get Directions
                 </Button>
               </a>
             </div>
@@ -443,7 +444,7 @@ export default function MainContent() {
       <Dialog open={showRSVPModal} onOpenChange={setShowRSVPModal}>
         <DialogContent className="max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl font-bold text-sage-800">
+            <DialogTitle className="text-center font-primary text-3xl font-light tracking-wide text-sage-800">
               RSVP
             </DialogTitle>
           </DialogHeader>
