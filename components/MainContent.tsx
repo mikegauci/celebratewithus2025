@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,7 @@ import {
   Car,
 } from "lucide-react";
 import Image from "next/image";
+import emailjs from "@emailjs/browser";
 
 export default function MainContent() {
   const [days, setDays] = useState(0);
@@ -34,28 +35,44 @@ export default function MainContent() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
-  
+
+  // Form state
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    attendance: "",
+    guests: "1",
+    dietary: "",
+  });
+  const [submitStatus, setSubmitStatus] = useState({
+    submitted: false,
+    success: false,
+    message: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const formRef = useRef<HTMLFormElement>(null);
+
   const carouselImages = [
     {
       src: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3",
-      alt: "Wedding couple"
+      alt: "Wedding couple",
     },
     {
       src: "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3",
-      alt: "Wedding rings"
+      alt: "Wedding rings",
     },
     {
       src: "https://images.unsplash.com/photo-1519741347686-c1e0aadf4611?ixlib=rb-4.0.3",
-      alt: "Wedding celebration"
-    }
+      alt: "Wedding celebration",
+    },
   ];
-  
+
   const nextSlide = useCallback(() => {
-    setCurrentSlide((prevSlide) => 
+    setCurrentSlide((prevSlide) =>
       prevSlide === carouselImages.length - 1 ? 0 : prevSlide + 1
     );
   }, [carouselImages.length]);
-  
+
   useEffect(() => {
     const interval = setInterval(nextSlide, 5000);
     return () => clearInterval(interval);
@@ -94,13 +111,15 @@ export default function MainContent() {
   const handleTouchEnd = () => {
     if (touchStart - touchEnd > 50) {
       // Swipe left
-      const nextSlideIndex = currentSlide === carouselImages.length - 1 ? 0 : currentSlide + 1;
+      const nextSlideIndex =
+        currentSlide === carouselImages.length - 1 ? 0 : currentSlide + 1;
       goToSlide(nextSlideIndex);
     }
 
     if (touchStart - touchEnd < -50) {
       // Swipe right
-      const nextSlideIndex = currentSlide === 0 ? carouselImages.length - 1 : currentSlide - 1;
+      const nextSlideIndex =
+        currentSlide === 0 ? carouselImages.length - 1 : currentSlide - 1;
       goToSlide(nextSlideIndex);
     }
 
@@ -109,25 +128,102 @@ export default function MainContent() {
     setTouchEnd(0);
   };
 
+  // Handle form input changes
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.attendance) {
+      setSubmitStatus({
+        submitted: true,
+        success: false,
+        message: "Please fill out all required fields.",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = await emailjs.sendForm(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_1f2bjfo",
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "template_6rdojjl",
+        formRef.current!,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "5c_MeTTACsPf5dLP5"
+      );
+
+      setSubmitStatus({
+        submitted: true,
+        success: true,
+        message:
+          "Thank you for your RSVP! We look forward to celebrating with you.",
+      });
+
+      // Reset form after successful submission
+      setFormData({
+        name: "",
+        email: "",
+        attendance: "",
+        guests: "1",
+        dietary: "",
+      });
+
+      // Close modal after 3 seconds on success
+      setTimeout(() => {
+        setShowRSVPModal(false);
+        setSubmitStatus({
+          submitted: false,
+          success: false,
+          message: "",
+        });
+      }, 3000);
+    } catch (error) {
+      console.error("RSVP submission error:", error);
+      setSubmitStatus({
+        submitted: true,
+        success: false,
+        message:
+          "There was an error submitting your RSVP. Please try again later.",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-sage-50">
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-[#f8faf8] py-10">
-        <div className="container mx-auto max-w-[1440px] flex min-h-[80vh] flex-col items-center px-4 md:min-h-[90vh] md:flex-row">
+      <section className="relative bg-[#f8faf8] py-10 md:min-h-screen">
+        <div className="container mx-auto max-w-[1440px] flex flex-col items-center px-4 md:min-h-[90vh] md:flex-row">
           {/* Left Side - Text */}
-          <div className="mb-12 flex w-full text-center flex-col justify-center md:mb-0 md:w-[25%] md:pr-8 mt-8">
-            <h1 className="flex flex-col space-y-10 font-primary text-5xl font-thin tracking-wide text-[#4C5D46] md:text-7xl lg:text-6xl">
+          <div className="mb-12 flex w-full text-center flex-col justify-center md:mb-0 md:w-[25%] md:pr-8 mt-8 md:relative md:z-0 absolute z-10 inset-0 flex items-center justify-center md:items-start md:justify-start">
+            <h1 className="flex flex-col space-y-10 font-primary w-full text-5xl font-thin tracking-wide text-white md:text-[#4C5D46] md:text-7xl lg:text-6xl">
               ROBERTA
-              <div className="font-script text-4xl font-light tracking-widest text-gray-500 md:text-5xl lg:text-6xl">
+              <div className="font-script text-4xl font-light tracking-widest text-white md:text-gray-500 md:text-5xl lg:text-6xl">
                 and
               </div>
               MICHAEL
             </h1>
-            <div className="mt-20 space-y-2 mb-2">
-              <h2 className="font-primary text-2xl font-light text-gray-500 md:text-3xl">
+            <div className="mt-20 space-y-2 mb-2 w-full">
+              <h2 className="font-primary text-2xl font-light text-white md:text-gray-500 md:text-3xl">
                 June 21st, 2025
               </h2>
-              <p className="font-primary text-xl font-light text-gray-500 md:text-2xl" style={{ letterSpacing: '1px' }}>
+              <p
+                className="font-primary text-xl font-light text-white md:text-gray-500 md:text-2xl"
+                style={{ letterSpacing: "1px" }}
+              >
                 Celebrate with us!
               </p>
             </div>
@@ -135,7 +231,7 @@ export default function MainContent() {
             <Button
               onClick={() => setShowRSVPModal(true)}
               className="px-10 py-3 bg-sage-600 text-white rounded-full border-none text-lg font-light tracking-widest transition-all hover:bg-sage-700 shadow-md hover:shadow-lg"
-              style={{ width: '210px', margin: '20px auto 0' }}
+              style={{ width: "210px", margin: "20px auto 0" }}
             >
               RSVP
             </Button>
@@ -161,11 +257,11 @@ export default function MainContent() {
                 </div>
               ))}
             </div>
-            
+
             {/* Mobile Carousel */}
             <div className="md:hidden relative">
               {/* Carousel container */}
-              <div 
+              <div
                 className="relative overflow-hidden"
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
@@ -175,7 +271,9 @@ export default function MainContent() {
                   <div
                     key={index}
                     className={`overflow-hidden rounded-t-full transition-opacity duration-1000 ease-in-out ${
-                      currentSlide === index ? 'opacity-100 z-10' : 'opacity-0 z-0 absolute inset-0'
+                      currentSlide === index
+                        ? "opacity-100 z-10"
+                        : "opacity-0 z-0 absolute inset-0"
                     }`}
                   >
                     <div className="relative h-[550px] w-full">
@@ -185,6 +283,8 @@ export default function MainContent() {
                         fill
                         className="object-cover object-center grayscale"
                       />
+                      {/* Dark overlay with matching border radius */}
+                      <div className="absolute inset-0 bg-black/50 rounded-t-full"></div>
                     </div>
                   </div>
                 ))}
@@ -229,47 +329,90 @@ export default function MainContent() {
             </p>
           </div>
 
+          {/* Bride and Groom Section */}
           <div className="relative mx-auto max-w-6xl">
-            {/* Left bride name */}
-            <div className="absolute left-8 top-1/2 -translate-y-1/2 text-center">
-              <h3 className="mb-3 font-script text-6xl font-light text-sage-800">
-                Roberta
-              </h3>
-              <p className="font-primary text-sm tracking-widest text-sage-600">
-                Bride
-              </p>
-            </div>
-
-            {/* Right groom name */}
-            <div className="absolute right-8 top-1/2 -translate-y-1/2 text-center">
-              <h3 className="mb-3 font-script text-6xl font-light text-sage-800">
-                Michael
-              </h3>
-              <p className="font-primary text-sm tracking-widest text-sage-600">
-                Groom
-              </p>
-            </div>
-
-            {/* Center images */}
-            <div className="flex justify-center space-x-8">
-              {/* Bride Image */}
-              <div className="relative h-[550px] w-[336px] overflow-hidden rounded-[200px]">
-                <Image
-                  src="/images/img11.jpeg"
-                  alt="Bride"
-                  fill
-                  className="object-cover object-center"
-                />
+            {/* Desktop Layout */}
+            <div className="hidden md:block">
+              {/* Left bride name */}
+              <div className="absolute left-8 top-1/2 -translate-y-1/2 text-center">
+                <h3 className="mb-3 font-script text-6xl font-light text-sage-800">
+                  Roberta
+                </h3>
+                <p className="font-primary text-sm tracking-widest text-sage-600">
+                  Bride
+                </p>
               </div>
 
-              {/* Groom Image */}
-              <div className="relative h-[550px] w-[336px] overflow-hidden rounded-[200px]">
-                <Image
-                  src="/images/img44.jpeg"
-                  alt="Groom"
-                  fill
-                  className="object-cover object-center"
-                />
+              {/* Right groom name */}
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 text-center">
+                <h3 className="mb-3 font-script text-6xl font-light text-sage-800">
+                  Michael
+                </h3>
+                <p className="font-primary text-sm tracking-widest text-sage-600">
+                  Groom
+                </p>
+              </div>
+
+              {/* Center images */}
+              <div className="flex justify-center space-x-8">
+                {/* Bride Image */}
+                <div className="relative h-[550px] w-[336px] overflow-hidden rounded-[200px]">
+                  <Image
+                    src="/images/img11.jpeg"
+                    alt="Bride"
+                    fill
+                    className="object-cover object-center"
+                  />
+                </div>
+
+                {/* Groom Image */}
+                <div className="relative h-[550px] w-[336px] overflow-hidden rounded-[200px]">
+                  <Image
+                    src="/images/img44.jpeg"
+                    alt="Groom"
+                    fill
+                    className="object-cover object-center"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Layout - Stacked */}
+            <div className="md:hidden flex flex-col items-center space-y-10">
+              {/* Roberta (Bride) Section */}
+              <div className="text-center">
+                <h3 className="mb-2 font-script text-5xl font-light text-sage-800">
+                  Roberta
+                </h3>
+                <p className="mb-6 font-primary text-sm tracking-widest text-sage-600">
+                  Bride
+                </p>
+                <div className="relative h-[450px] w-[300px] overflow-hidden rounded-[200px]">
+                  <Image
+                    src="/images/img11.jpeg"
+                    alt="Bride"
+                    fill
+                    className="object-cover object-center"
+                  />
+                </div>
+              </div>
+
+              {/* Michael (Groom) Section */}
+              <div className="text-center">
+                <h3 className="mb-2 font-script text-5xl font-light text-sage-800">
+                  Michael
+                </h3>
+                <p className="mb-6 font-primary text-sm tracking-widest text-sage-600">
+                  Groom
+                </p>
+                <div className="relative h-[450px] w-[300px] overflow-hidden rounded-[200px]">
+                  <Image
+                    src="/images/img44.jpeg"
+                    alt="Groom"
+                    fill
+                    className="object-cover object-center"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -283,8 +426,8 @@ export default function MainContent() {
           <div className="absolute right-1/4 bottom-1/4 h-60 w-60 rounded-full border border-sage-300"></div>
           <div className="absolute left-2/3 top-1/2 h-20 w-20 rounded-full border border-sage-300"></div>
         </div>
-        <div className="container mx-auto max-w-[70%] px-4">
-          <h2 className="mb-3 text-center font-script text-[70px] font-light tracking-wide text-sage-800">
+        <div className="container mx-auto max-w-[90%] md:max-w-[70%] px-4">
+          <h2 className="mb-3 text-center font-script text-[40px] md:text-[70px] font-light tracking-wide text-sage-800">
             Counting Down to Forever
           </h2>
           <p className="mx-auto mb-12 max-w-xl text-center font-primary text-sage-500">
@@ -365,8 +508,7 @@ export default function MainContent() {
             {/* Desktop Timeline (horizontal) */}
             <div className="hidden md:block relative py-8">
               {/* Horizontal Timeline Line */}
-              <div className="absolute top-1/2 left-0 w-full h-px -translate-y-1/2 bg-sage-200"></div>
-
+              <div className="absolute top-1/2 left-0 right-0 h-px w-[90%] mx-auto -translate-y-1/2 bg-sage-200"></div>
               <div className="flex justify-between">
                 {[
                   { time: "16:00", event: "Ceremony", icon: ChurchIcon },
@@ -404,64 +546,131 @@ export default function MainContent() {
       {/* Venue Section */}
       <section className="bg-sage-50 py-20">
         <div className="container mx-auto max-w-[70%] px-4">
-          <h2 className="mb-3 text-center font-script text-[70px] font-light tracking-wide text-sage-800">
-            Venue
+          <h2 className="mb-3 text-center font-script text-[40px] md:text-[70px] font-light tracking-wide text-sage-800">
+            Venues
           </h2>
 
           <div className="mx-auto max-w-6xl">
-            <div className="mb-8 text-center">
-              <p className="text-lg text-sage-600">
-                <b>Villa Arrigo</b> <br /> St Paul's Street, San Pawl Tat-Targa,
-                Naxxar
-              </p>
-            </div>
+            {/* Ceremony Venue */}
+            <div className="mb-16">
+              <div className="mb-8 text-center">
+                <h3 className="mb-2 text-3xl font-primary text-sage-800">
+                  Ceremony
+                </h3>
+                <p className="text-lg text-sage-600">
+                  <b>St Joseph The Worker Church</b> <br /> Xemxija, St. Paul's
+                  Bay, Malta
+                </p>
+              </div>
 
-            {/* Two column layout */}
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-              {/* Left Column - Venue Image */}
-              <div
-                className="h-[360px] overflow-hidden shadow-md"
-                style={{ borderRadius: "0 50px" }}
-              >
-                <div className="relative h-full w-full">
-                  <Image
-                    src="/images/villa-arrigo-123.jpg"
-                    alt="Venue"
-                    fill
-                    className="object-cover transition-all duration-700 hover:scale-105"
-                  />
+              {/* Two column layout for church */}
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                {/* Left Column - Church Image */}
+                <div
+                  className="h-[360px] overflow-hidden shadow-md"
+                  style={{ borderRadius: "0 50px" }}
+                >
+                  <div className="relative h-full w-full">
+                    <Image
+                      src="/images/xemxija-church-1.jpg"
+                      alt="St Joseph The Worker Church"
+                      fill
+                      className="object-cover transition-all duration-700 hover:scale-105"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column - Google Maps */}
+                <div
+                  className="h-[360px] overflow-hidden shadow-md"
+                  style={{ borderRadius: "0 50px" }}
+                >
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d277.7619494467487!2d14.386889657026051!3d35.95261784033847!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130e4fcdb4a90b47%3A0x40eef3965fa288ae!2sSt%20Joseph%20The%20Worker%20Church!5e1!3m2!1sen!2smt!4v1744546189823!5m2!1sen!2smt"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
                 </div>
               </div>
 
-              {/* Right Column - Google Maps */}
-              <div
-                className="h-[360px] overflow-hidden shadow-md"
-                style={{ borderRadius: "0 50px" }}
-              >
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d390.22271232236847!2d14.441439173849428!3d35.9211700283263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130e4fc6eaa0628f%3A0xac19fe7b799a5e89!2sVilla%20Arrigo%20Hall!5e1!3m2!1sen!2smt!4v1743874879762!5m2!1sen!2smt"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                ></iframe>
+              {/* Get Directions Button for Church */}
+              <div className="mt-8 flex justify-center">
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=St+Joseph+The+Worker+Church+St+Pauls+Bay+Malta&travelmode=driving"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                >
+                  <Button className="px-10 py-3 bg-sage-600 text-white rounded-full border-none text-lg font-light transition-all hover:bg-sage-700 shadow-md hover:shadow-lg">
+                    Get Directions to Church
+                  </Button>
+                </a>
               </div>
             </div>
 
-            {/* Get Directions Button */}
-            <div className="mt-8 flex justify-center">
-              <a
-                href="https://www.google.com/maps/dir/?api=1&destination=Villa+Arrigo+Hall+Naxxar+Malta&travelmode=driving"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block"
-              >
-                <Button className="px-10 py-3 bg-sage-600 text-white rounded-full border-none text-lg font-light tracking-widest transition-all hover:bg-sage-700 shadow-md hover:shadow-lg">
-                  Get Directions
-                </Button>
-              </a>
+            {/* Reception Venue */}
+            <div>
+              <div className="mb-8 text-center">
+                <h3 className="mb-2 text-3xl font-primary text-sage-800">
+                  Reception
+                </h3>
+                <p className="text-lg text-sage-600">
+                  <b>Villa Arrigo</b> <br /> St Paul's Street, San Pawl
+                  Tat-Targa, Naxxar
+                </p>
+              </div>
+
+              {/* Two column layout for reception venue */}
+              <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                {/* Left Column - Venue Image */}
+                <div
+                  className="h-[360px] overflow-hidden shadow-md"
+                  style={{ borderRadius: "0 50px" }}
+                >
+                  <div className="relative h-full w-full">
+                    <Image
+                      src="/images/villa-arrigo-123.jpg"
+                      alt="Villa Arrigo"
+                      fill
+                      className="object-cover transition-all duration-700 hover:scale-105"
+                    />
+                  </div>
+                </div>
+
+                {/* Right Column - Google Maps */}
+                <div
+                  className="h-[360px] overflow-hidden shadow-md"
+                  style={{ borderRadius: "0 50px" }}
+                >
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d390.22271232236847!2d14.441439173849428!3d35.9211700283263!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x130e4fc6eaa0628f%3A0xac19fe7b799a5e89!2sVilla%20Arrigo%20Hall!5e1!3m2!1sen!2smt!4v1743874879762!5m2!1sen!2smt"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  ></iframe>
+                </div>
+              </div>
+
+              {/* Get Directions Button for Reception */}
+              <div className="mt-8 flex justify-center">
+                <a
+                  href="https://www.google.com/maps/dir/?api=1&destination=Villa+Arrigo+Hall+Naxxar+Malta&travelmode=driving"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block"
+                >
+                  <Button className="px-10 py-3 bg-sage-600 text-white rounded-full border-none text-lg font-light transition-all hover:bg-sage-700 shadow-md hover:shadow-lg">
+                    Get Directions to Venue
+                  </Button>
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -475,7 +684,13 @@ export default function MainContent() {
           </h2>
           <p className="mx-auto mb-12 max-w-xl text-center font-primary text-sage-500">
             Although we encourage you to wear what makes you feel fabulous, we
-            kindly ask you to avoid wearing white, sage & emerald green.
+            kindly ask you to{" "}
+            <strong>
+              <i>
+                <u>avoid</u>
+              </i>{" "}
+              wearing white, sage & emerald green.
+            </strong>
           </p>
 
           <div className="mx-auto flex max-w-3xl flex-wrap justify-center gap-8">
@@ -504,112 +719,158 @@ export default function MainContent() {
       <Dialog open={showRSVPModal} onOpenChange={setShowRSVPModal}>
         <DialogContent className="max-w-md bg-white">
           <DialogHeader>
-            <DialogTitle className="text-center font-primary text-3xl font-light tracking-wide text-sage-800">
+            <DialogTitle className="text-center text-2xl font-primary font-bold text-sage-800">
               RSVP
             </DialogTitle>
           </DialogHeader>
 
-          <form className="space-y-4">
-            <div>
-              <label
-                htmlFor="name"
-                className="mb-1 block text-sm font-medium text-sage-700"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                className="w-full rounded-md border border-sage-200 p-2 focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500"
-                placeholder="Your name"
-                required
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-1 block text-sm font-medium text-sage-700"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                className="w-full rounded-md border border-sage-200 p-2 focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500"
-                placeholder="your.email@example.com"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="mb-1 block text-sm font-medium text-sage-700">
-                Will you be attending?
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="attendance"
-                    value="yes"
-                    className="mr-2 text-sage-600 focus:ring-sage-500"
+          {submitStatus.submitted && submitStatus.success ? (
+            <div className="py-8 text-center">
+              <div className="mb-4 rounded-full bg-green-100 p-2 inline-flex">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6 text-green-600"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
                   />
-                  <span>Yes, I'll be there!</span>
-                </label>
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="attendance"
-                    value="no"
-                    className="mr-2 text-sage-600 focus:ring-sage-500"
-                  />
-                  <span>Sorry, I can't make it</span>
-                </label>
+                </svg>
               </div>
+              <p className="text-lg text-sage-700">{submitStatus.message}</p>
             </div>
+          ) : (
+            <form ref={formRef} className="space-y-4" onSubmit={handleSubmit}>
+              {submitStatus.submitted && !submitStatus.success && (
+                <div className="rounded-md bg-red-50 p-4 mb-4">
+                  <p className="text-sm text-red-700">{submitStatus.message}</p>
+                </div>
+              )}
 
-            <div>
-              <label
-                htmlFor="guests"
-                className="mb-1 block text-sm font-medium text-sage-700"
-              >
-                Number of Guests (including yourself)
-              </label>
-              <select
-                id="guests"
-                className="w-full rounded-md border border-sage-200 p-2 focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500"
-              >
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-              </select>
-            </div>
+              <div>
+                <label
+                  htmlFor="name"
+                  className="mb-1 block text-sm font-medium text-sage-700"
+                >
+                  Full Name*
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full rounded-md border border-sage-200 p-2 focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500"
+                  placeholder="Your name"
+                  required
+                />
+              </div>
 
-            <div>
-              <label
-                htmlFor="dietary"
-                className="mb-1 block text-sm font-medium text-sage-700"
-              >
-                Dietary Restrictions
-              </label>
-              <textarea
-                id="dietary"
-                className="w-full rounded-md border border-sage-200 p-2 focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500"
-                placeholder="Please let us know of any dietary restrictions"
-                rows={3}
-              ></textarea>
-            </div>
+              <div>
+                <label
+                  htmlFor="email"
+                  className="mb-1 block text-sm font-medium text-sage-700"
+                >
+                  Email*
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className="w-full rounded-md border border-sage-200 p-2 focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500"
+                  placeholder="your.email@example.com"
+                  required
+                />
+              </div>
 
-            <div className="mt-6 flex justify-center">
-              <Button
-                type="submit"
-                className="rounded-full bg-sage-600 px-8 py-2 font-semibold text-white hover:bg-sage-700"
-              >
-                Submit RSVP
-              </Button>
-            </div>
-          </form>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-sage-700">
+                  Will you be attending?*
+                </label>
+                <div className="flex gap-4">
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="attendance"
+                      value="yes"
+                      checked={formData.attendance === "yes"}
+                      onChange={handleInputChange}
+                      className="mr-2 text-sage-600 focus:ring-sage-500"
+                      required
+                    />
+                    <span>Yes, I'll be there!</span>
+                  </label>
+                  <label className="flex items-center">
+                    <input
+                      type="radio"
+                      name="attendance"
+                      value="no"
+                      checked={formData.attendance === "no"}
+                      onChange={handleInputChange}
+                      className="mr-2 text-sage-600 focus:ring-sage-500"
+                    />
+                    <span>Sorry, I can't make it</span>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="guests"
+                  className="mb-1 block text-sm font-medium text-sage-700"
+                >
+                  Number of Guests (including yourself)
+                </label>
+                <select
+                  id="guests"
+                  name="guests"
+                  value={formData.guests}
+                  onChange={handleInputChange}
+                  className="w-full rounded-md border border-sage-200 p-2 focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500"
+                >
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="dietary"
+                  className="mb-1 block text-sm font-medium text-sage-700"
+                >
+                  Dietary Restrictions
+                </label>
+                <textarea
+                  id="dietary"
+                  name="dietary"
+                  value={formData.dietary}
+                  onChange={handleInputChange}
+                  className="w-full rounded-md border border-sage-200 p-2 focus:border-sage-500 focus:outline-none focus:ring-1 focus:ring-sage-500"
+                  placeholder="Please let us know of any dietary restrictions"
+                  rows={3}
+                ></textarea>
+              </div>
+
+              <div className="mt-6 flex justify-center">
+                <Button
+                  type="submit"
+                  className="rounded-full bg-sage-600 px-8 py-2 font-semibold text-white hover:bg-sage-700"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Sending..." : "Submit RSVP"}
+                </Button>
+              </div>
+            </form>
+          )}
         </DialogContent>
       </Dialog>
 
