@@ -11,11 +11,8 @@ import { Button } from "@/components/ui/button";
 import {
   Calendar,
   ChurchIcon,
-  Clock,
   Heart,
   Mail,
-  MapPin,
-  Sparkles,
   Martini,
   Castle,
   Cake,
@@ -35,6 +32,8 @@ export default function MainContent() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('hero');
 
   // Form state
   const [formData, setFormData] = useState({
@@ -51,6 +50,12 @@ export default function MainContent() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+
+  // Add state for header scrolled status
+  const [headerScrolled, setHeaderScrolled] = useState(false);
+
+  // Add state for showing/hiding back-to-top button
+  const [showBackToTop, setShowBackToTop] = useState(false);
 
   const carouselImages = [
     {
@@ -157,7 +162,7 @@ export default function MainContent() {
     setIsSubmitting(true);
 
     try {
-      const result = await emailjs.sendForm(
+      await emailjs.sendForm(
         process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_1f2bjfo",
         process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "template_6rdojjl",
         formRef.current!,
@@ -202,10 +207,159 @@ export default function MainContent() {
     }
   };
 
+  // Function to handle smooth scrolling and close mobile menu
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+    e.preventDefault();
+    const element = document.getElementById(sectionId);
+    if (element) {
+      const offsetTop = element.offsetTop - 45; // Adjust for header height
+      window.scrollTo({
+        top: offsetTop,
+        behavior: 'smooth'
+      });
+      setActiveSection(sectionId);
+      setMobileMenuOpen(false);
+    }
+  };
+  
+  // Update scroll handlers to also handle back-to-top visibility
+  useEffect(() => {
+    const handleScroll = () => {
+      const sections = ['hero', 'our-story', 'countdown', 'timeline', 'venues', 'dress-code'];
+      const currentPosition = window.scrollY + 100; // Add offset for header
+      
+      // Show back-to-top button when scrolled down 300px
+      if (window.scrollY > 300) {
+        setShowBackToTop(true);
+      } else {
+        setShowBackToTop(false);
+      }
+      
+      // Check if at the top of the page (hero section)
+      const ourStoryElement = document.getElementById('our-story');
+      if (ourStoryElement && window.scrollY < ourStoryElement.offsetTop - 100) {
+        setActiveSection('hero');
+        return;
+      }
+      
+      for (const section of sections) {
+        if (section === 'hero') continue; // Skip hero in the loop check
+        
+        const element = document.getElementById(section);
+        if (element) {
+          const top = element.offsetTop;
+          const height = element.offsetHeight;
+          
+          if (currentPosition >= top && currentPosition < top + height) {
+            setActiveSection(section);
+            break;
+          }
+        }
+      }
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  // Function for desktop nav link class
+  const getNavLinkClass = (sectionId: string) => {
+    return `transition-all hover:border-b hover:border-[#5c745c] hover:pb-1 ${
+      activeSection === sectionId 
+        ? 'border-b border-[#5c745c] pb-1' 
+        : ''
+    }`;
+  };
+  
+  // Function for mobile nav link class
+  const getMobileNavLinkClass = (sectionId: string) => {
+    return `block py-1 transition-all hover:pl-2 hover:border-l-2 hover:border-[#5c745c] ${
+      activeSection === sectionId 
+        ? 'pl-2 border-l-2 border-[#5c745c]' 
+        : ''
+    }`;
+  };
+
+  // Update header style on scroll
+  useEffect(() => {
+    const handleHeaderScroll = () => {
+      if (window.scrollY > 50) {
+        setHeaderScrolled(true);
+      } else {
+        setHeaderScrolled(false);
+      }
+    };
+    
+    window.addEventListener('scroll', handleHeaderScroll);
+    return () => window.removeEventListener('scroll', handleHeaderScroll);
+  }, []);
+
+  // Function to scroll to top
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <div className="min-h-screen bg-sage-50">
+      {/* Fixed Header */}
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${headerScrolled ? 'bg-[#f8faf8] shadow-md' : 'bg-[#f8faf8] backdrop-blur-sm'}`}>
+        <div className="container mx-auto max-w-[1440px] py-3 px-4">
+          <nav className="flex items-center justify-start md:justify-center">
+            <div className="md:hidden">
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+                className="text-sage-700 hover:text-sage-900"
+                aria-label="Toggle menu"
+              >
+                {mobileMenuOpen ? 
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg> : 
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                }
+              </button>
+            </div>
+            
+            
+            
+            {/* Desktop Menu */}
+            <ul className="hidden md:flex gap-6 text-sm font-primary text-sage-700">
+              <li><a href="#our-story" className={getNavLinkClass('our-story')} onClick={(e) => handleNavClick(e, 'our-story')}>Our Story</a></li>
+              <li><a href="#countdown" className={getNavLinkClass('countdown')} onClick={(e) => handleNavClick(e, 'countdown')}>Countdown</a></li>
+              <li><a href="#timeline" className={getNavLinkClass('timeline')} onClick={(e) => handleNavClick(e, 'timeline')}>Timeline</a></li>
+              <li><a href="#venues" className={getNavLinkClass('venues')} onClick={(e) => handleNavClick(e, 'venues')}>Venues</a></li>
+              <li><a href="#dress-code" className={getNavLinkClass('dress-code')} onClick={(e) => handleNavClick(e, 'dress-code')}>Dress Code</a></li>
+            </ul>
+          </nav>
+          
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden py-3 border-t border-sage-100">
+              <ul className="flex flex-col space-y-3 text-sm font-primary text-sage-700">
+                <li><a href="#our-story" className={getMobileNavLinkClass('our-story')} onClick={(e) => handleNavClick(e, 'our-story')}>Our Story</a></li>
+                <li><a href="#countdown" className={getMobileNavLinkClass('countdown')} onClick={(e) => handleNavClick(e, 'countdown')}>Countdown</a></li>
+                <li><a href="#timeline" className={getMobileNavLinkClass('timeline')} onClick={(e) => handleNavClick(e, 'timeline')}>Timeline</a></li>
+                <li><a href="#venues" className={getMobileNavLinkClass('venues')} onClick={(e) => handleNavClick(e, 'venues')}>Venues</a></li>
+                <li><a href="#dress-code" className={getMobileNavLinkClass('dress-code')} onClick={(e) => handleNavClick(e, 'dress-code')}>Dress Code</a></li>
+              </ul>
+            </div>
+          )}
+        </div>
+      </header>
+      
+      {/* Add padding to account for fixed header */}
+      <div className="pt-12"></div>
+      
       {/* Hero Section */}
-      <section className="relative bg-[#f8faf8] py-10 md:min-h-screen">
+      <section
+        className="relative bg-[#f8faf8] py-10 md:min-h-screen"
+        id="hero"
+      >
         <div className="container mx-auto max-w-[1440px] flex flex-col items-center px-4 md:min-h-[90vh] md:flex-row">
           {/* Left Side - Text */}
           <div className="mb-12 flex w-full text-center flex-col justify-center md:mb-0 md:w-[25%] md:pr-8 mt-8 md:relative md:z-0 absolute z-10 inset-0 flex items-center justify-center md:items-start md:justify-start">
@@ -295,7 +449,7 @@ export default function MainContent() {
       </section>
 
       {/* Our Story Section */}
-      <section className="bg-white py-12">
+      <section className="bg-white py-12" id="our-story">
         <div className="container mx-auto max-w-[1440px] px-4">
           <h2 className="mb-3 text-center font-script text-[70px] md:text-[140px] font-light tracking-wide text-sage-800 leading-[1] mb-8">
             Our Story
@@ -420,7 +574,7 @@ export default function MainContent() {
       </section>
 
       {/* Countdown Section */}
-      <section className="relative bg-sage-100 py-20 overflow-hidden">
+      <section className="relative bg-sage-100 py-20 overflow-hidden" id="countdown">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute left-1/4 top-1/4 h-40 w-40 rounded-full border border-sage-300"></div>
           <div className="absolute right-1/4 bottom-1/4 h-60 w-60 rounded-full border border-sage-300"></div>
@@ -455,7 +609,7 @@ export default function MainContent() {
       </section>
 
       {/* Timeline Section */}
-      <section className="bg-white py-20">
+      <section className="bg-white py-20" id="timeline">
         <div className="container mx-auto max-w-[70%] px-4">
           <h2 className="mb-3 text-center font-script text-[70px] font-light tracking-wide text-sage-800">
             On the Day
@@ -544,7 +698,7 @@ export default function MainContent() {
       </section>
 
       {/* Venue Section */}
-      <section className="bg-sage-50 py-20">
+      <section className="bg-sage-50 py-20" id="venues">
         <div className="container mx-auto max-w-[70%] px-4">
           <h2 className="mb-3 text-center font-script text-[40px] md:text-[70px] font-light tracking-wide text-sage-800">
             Venues
@@ -677,7 +831,7 @@ export default function MainContent() {
       </section>
 
       {/* Dress Code Section */}
-      <section className="bg-white py-20">
+      <section className="bg-white py-20" id="dress-code">
         <div className="container mx-auto max-w-[1440px] px-4">
           <h2 className="mb-3 text-center font-script text-[70px] font-light tracking-wide text-sage-800">
             Dress Code
@@ -918,6 +1072,19 @@ export default function MainContent() {
           </p>
         </div>
       </footer>
+
+      {/* Back to Top Button */}
+      <button
+        onClick={scrollToTop}
+        className={`fixed bottom-6 right-6 z-50 p-3 rounded-full bg-sage-600 text-white shadow-lg transition-all duration-300 hover:bg-sage-700 ${
+          showBackToTop ? 'opacity-100 visible' : 'opacity-0 invisible'
+        }`}
+        aria-label="Back to top"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        </svg>
+      </button>
     </div>
   );
 }
