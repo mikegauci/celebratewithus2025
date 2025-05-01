@@ -362,7 +362,7 @@ export default function MainContent() {
       >
         <div className="container mx-auto max-w-[1440px] flex flex-col items-center px-4 md:min-h-[90vh] md:flex-row">
           {/* Left Side - Text */}
-          <div className="mb-12 flex w-full text-center flex-col justify-center md:mb-0 md:w-[25%] md:pr-8 mt-8 md:relative md:z-0 absolute z-10 inset-0 flex items-center justify-center md:items-start md:justify-start">
+          <div className="flex w-full text-center flex-col justify-center md:mb-0 md:w-[25%] md:pr-8 mt-8 md:relative md:z-0 absolute z-10 inset-0 flex items-center justify-center md:items-start md:justify-start">
             <h1 className="flex flex-col space-y-10 font-primary w-full text-5xl font-thin tracking-wide text-white md:text-[#4C5D46] md:text-7xl lg:text-6xl">
               ROBERTA
               <div className="font-script text-4xl font-light tracking-widest text-white md:text-gray-500 md:text-5xl lg:text-6xl">
