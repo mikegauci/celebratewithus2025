@@ -59,16 +59,16 @@ export default function MainContent() {
 
   const carouselImages = [
     {
-      src: "https://images.unsplash.com/photo-1583939003579-730e3918a45a?ixlib=rb-4.0.3",
-      alt: "Wedding couple",
+      src: "/images/img-111.jpg",
+      alt: "Img 1",
     },
     {
-      src: "https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3",
-      alt: "Wedding rings",
+      src: "/images/img22.jpg",
+      alt: "Img 2",
     },
     {
-      src: "https://images.unsplash.com/photo-1519741347686-c1e0aadf4611?ixlib=rb-4.0.3",
-      alt: "Wedding celebration",
+      src: "/images/img-222.jpg",
+      alt: "Img 3",
     },
   ];
 
@@ -404,7 +404,7 @@ export default function MainContent() {
                         alt={image.alt}
                         fill
                         sizes="(max-width: 768px) 20vw, 20vw"
-                        className="object-cover object-center grayscale"
+                        className="object-cover object-center grayscale transition-all duration-500 hover:grayscale-0"
                       />
                     </div>
                   </div>
@@ -424,7 +424,7 @@ export default function MainContent() {
                 {carouselImages.map((image, index) => (
                   <div
                     key={index}
-                    className={`overflow-hidden rounded-t-full transition-opacity duration-1000 ease-in-out ${
+                    className={`overflow-hidden rounded-t-full transition-opacity duration-1000 ease-in-out group ${
                       currentSlide === index
                         ? "opacity-100 z-10"
                         : "opacity-0 z-0 absolute inset-0"
@@ -435,10 +435,10 @@ export default function MainContent() {
                         src={image.src}
                         alt={image.alt}
                         fill
-                        className="object-cover object-center grayscale"
+                        className="object-cover object-center grayscale transition-all duration-500 hover:grayscale-0"
                       />
                       {/* Dark overlay with matching border radius */}
-                      <div className="absolute inset-0 bg-black/50 rounded-t-full"></div>
+                      <div className="absolute inset-0 bg-black/50 rounded-t-full transition-opacity duration-500 group-hover:opacity-30"></div>
                     </div>
                   </div>
                 ))}
