@@ -1,0 +1,76 @@
+// Define guest data type
+export type GuestData = {
+  slug: string;
+  companion?: string;
+};
+
+// Single source of truth for all guest data
+export const guestList: GuestData[] = [
+  { slug: 'angelique' },
+  { slug: 'joseph' },
+  { slug: 'nicole' },
+  { slug: 'javier' },
+  { slug: 'yuan' },
+  { slug: 'betty' },
+  { slug: 'maria' },
+  { slug: 'lucy' },
+  { slug: 'marvic' },
+  { slug: 'julia' },
+  { slug: 'jonathan' },
+  { slug: 'dorian' },
+  { slug: 'alan' },
+  { slug: 'yana', companion: 'Daryl' },
+  { slug: 'emma' },
+  { slug: 'claude', companion: 'Naomi' },
+  { slug: 'gilbert' },
+  { slug: 'malcolm' },
+  { slug: 'johann', companion: 'Michela' },
+  { slug: 'shaun' },
+  { slug: 'keith', companion: 'Shanice' },
+  { slug: 'ryan' },
+  { slug: 'darren' },
+  { slug: 'jeremy' },
+  { slug: 'sky' },
+  { slug: 'monica', companion: 'Simon' },
+  { slug: 'daniel' },
+  { slug: 'nader' },
+  { slug: 'isaac' },
+  { slug: 'raphael' },
+  { slug: 'daniela', companion: 'Andrew' },
+  { slug: 'matthew' },
+  { slug: 'andrea' },
+  { slug: 'fredrick' },
+  { slug: 'james' },
+  { slug: 'max' },
+  { slug: 'marcus' },
+  { slug: 'jake', companion: 'Sarah' },
+  { slug: 'harry', companion: 'Maria' },
+  { slug: 'alex', companion: 'Lucia' },
+  { slug: 'nat' },
+  { slug: 'stanislav', companion: 'Caterine' },
+  { slug: 'adil' },
+  { slug: 'kate', companion: 'Marian' },
+  { slug: 'valerio', companion: 'Ann' },
+  { slug: 'chris', companion: 'Leah' },
+  { slug: 'eddie' },
+  { slug: 'david' },
+  { slug: 'patrick' },
+  { slug: 'mauricio', companion: 'Ana Maria' },
+  { slug: 'julian' },
+  { slug: 'steve' },
+  { slug: 'keith', companion: 'Sarah' },
+  { slug: 'luca', companion: 'Maria' },
+  { slug: 'karl', companion: 'Gillian' },
+  { slug: 'zack', companion: 'Kelly' },
+  { slug: 'thomas' },
+  { slug: 'luke' },
+  { slug: 'deborah', companion: 'Stephen' },
+  { slug: 'shantanu', companion: 'Jashan' },
+  { slug: 'ginel', companion: 'Florian' },
+  { slug: 'manuel' }
+];
+
+// Helper function to find a guest by slug
+export function getGuestBySlug(slug: string): GuestData | undefined {
+  return guestList.find(guest => guest.slug === slug);
+} 

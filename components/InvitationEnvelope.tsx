@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 interface InvitationEnvelopeProps {
   guestName: string;
+  companion?: string;
   isOpened: boolean;
   onOpen: () => void;
   onReveal: () => void;
@@ -165,6 +166,7 @@ const WildMagnoliaText = styled.p`
 
 export default function InvitationEnvelope({
   guestName,
+  companion,
   isOpened: externalIsOpened,
   onOpen,
   onReveal,
@@ -241,7 +243,7 @@ export default function InvitationEnvelope({
                     <span style={{ fontFamily: "Wild Magnolia, serif" }}>
                       &
                     </span>{" "}
-                    Guest
+                    {companion || "Guest"}
                   </p>
 
                   <p className="text-sm uppercase tracking-wider text-gray-700 mb-2">

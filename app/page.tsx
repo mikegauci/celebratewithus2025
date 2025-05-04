@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Playfair_Display } from "next/font/google";
-
-const playfair = Playfair_Display({ subsets: ["latin"] });
+import { getGuestBySlug } from "./data/guests";
 
 // Dynamically import components to reduce initial bundle size
 const InvitationEnvelope = dynamic(() => import("@/components/InvitationEnvelope"));
@@ -14,6 +12,7 @@ const MainContent = dynamic(() => import("@/components/MainContent"));
 export default function Home() {
   const params = useParams();
   const guestName = (params?.slug as string) || "";
+  const guestData = guestName ? getGuestBySlug(guestName) : undefined;
   const [isEnvelopeOpened, setIsEnvelopeOpened] = useState(false);
   const [showMainContent, setShowMainContent] = useState(false);
 
@@ -33,6 +32,7 @@ export default function Home() {
       {!showMainContent ? (
         <InvitationEnvelope
           guestName={guestName}
+          companion={guestData?.companion}
           isOpened={isEnvelopeOpened}
           onOpen={() => setIsEnvelopeOpened(true)}
           onReveal={() => setShowMainContent(true)}

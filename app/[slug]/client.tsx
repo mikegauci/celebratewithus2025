@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 const InvitationEnvelope = dynamic(() => import("@/components/InvitationEnvelope"));
 const MainContent = dynamic(() => import("@/components/MainContent"));
 
-export default function GuestPageClient({ slug }: { slug: string }) {
+export default function GuestPageClient({ slug, companion }: { slug: string; companion?: string }) {
   const [isEnvelopeOpened, setIsEnvelopeOpened] = useState(false);
   const [showMainContent, setShowMainContent] = useState(false);
 
@@ -16,6 +16,7 @@ export default function GuestPageClient({ slug }: { slug: string }) {
       {!showMainContent ? (
         <InvitationEnvelope
           guestName={slug}
+          companion={companion}
           isOpened={isEnvelopeOpened}
           onOpen={() => setIsEnvelopeOpened(true)}
           onReveal={() => setShowMainContent(true)}
