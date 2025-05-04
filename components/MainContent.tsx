@@ -163,12 +163,56 @@ export default function MainContent() {
     setIsSubmitting(true);
 
     try {
+      // Send email notification using EmailJS
+      console.log("Sending email via EmailJS...");
       await emailjs.sendForm(
         process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_1f2bjfo",
         process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "template_6rdojjl",
         formRef.current!,
         process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "5c_MeTTACsPf5dLP5"
       );
+      console.log("EmailJS submission successful");
+
+      // Send data to Google Sheets
+      const googleScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL;
+      console.log("Google Script URL:", googleScriptUrl);
+      
+      if (!googleScriptUrl) {
+        console.error("NEXT_PUBLIC_GOOGLE_SCRIPT_URL environment variable is missing");
+        throw new Error("Google Script URL not configured. Please set the NEXT_PUBLIC_GOOGLE_SCRIPT_URL environment variable.");
+      }
+      
+      // Prepare the form data for Google Sheets
+      const formDataForSheets = {
+        name: formData.name,
+        email: formData.email,
+        attendance: formData.attendance,
+        guests: formData.guests,
+        dietary: formData.dietary,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log("Sending data to Google Sheets:", formDataForSheets);
+      
+      try {
+        // Make fetch request to Google Apps Script web app
+        // Using no-cors mode as Google Apps Script might not allow CORS from all origins
+        const response = await fetch(googleScriptUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formDataForSheets),
+          mode: "no-cors" // Use no-cors to ensure the request is sent even if CORS is restricted
+        });
+        
+        console.log("Google Sheets request sent, but response in no-cors mode cannot be read");
+        // Note: In no-cors mode, we can't read the response details
+      } catch (sheetError) {
+        console.error("Google Sheets submission error:", sheetError);
+        // Continue with form success even if Google Sheets fails
+        // We don't want to block the user experience if only the logging fails
+      }
 
       setSubmitStatus({
         submitted: true,
