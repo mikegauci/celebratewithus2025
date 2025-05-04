@@ -162,11 +162,21 @@ export default function MainContent() {
     try {
       // Send email notification using EmailJS
       console.log("Sending email via EmailJS...");
+      
+      const emailjsServiceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+      const emailjsTemplateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+      const emailjsPublicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+      
+      if (!emailjsServiceId || !emailjsTemplateId || !emailjsPublicKey) {
+        console.error("EmailJS environment variables are missing");
+        throw new Error("EmailJS not configured. Please set the required environment variables.");
+      }
+      
       await emailjs.sendForm(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_1f2bjfo",
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "template_6rdojjl",
+        emailjsServiceId,
+        emailjsTemplateId,
         formRef.current!,
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "5c_MeTTACsPf5dLP5"
+        emailjsPublicKey
       );
       console.log("EmailJS submission successful");
 
