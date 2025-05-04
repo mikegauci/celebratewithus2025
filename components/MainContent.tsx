@@ -9,7 +9,10 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
+  Calendar,
   ChurchIcon,
+  Heart,
+  Mail,
   Martini,
   Castle,
   Cake,
@@ -162,31 +165,22 @@ export default function MainContent() {
     try {
       // Send email notification using EmailJS
       console.log("Sending email via EmailJS...");
-      
-      const emailjsServiceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-      const emailjsTemplateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-      const emailjsPublicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
-      
-      if (!emailjsServiceId || !emailjsTemplateId || !emailjsPublicKey) {
-        console.error("EmailJS environment variables are missing");
-        throw new Error("EmailJS not configured. Please set the required environment variables.");
-      }
-      
       await emailjs.sendForm(
-        emailjsServiceId,
-        emailjsTemplateId,
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "service_1f2bjfo",
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "template_6rdojjl",
         formRef.current!,
-        emailjsPublicKey
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || "5c_MeTTACsPf5dLP5"
       );
       console.log("EmailJS submission successful");
 
       // Send data to Google Sheets
-      const googleScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL;
+      // Fallback to a test script URL for development (replace with your script URL)
+      const googleScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL || 
+        "https://script.google.com/macros/s/AKfycbxIK7fDT00sNmIsZrFmxUQFYWBGV_uWUnrTbQYUfcz4uy-p7_KsJKc7FBlk0C8AXON/exec";
       console.log("Google Script URL:", googleScriptUrl);
       
-      if (!googleScriptUrl) {
-        console.error("NEXT_PUBLIC_GOOGLE_SCRIPT_URL environment variable is missing");
-        throw new Error("Google Script URL not configured. Please set the NEXT_PUBLIC_GOOGLE_SCRIPT_URL environment variable.");
+      if (googleScriptUrl.includes("YOUR_GOOGLE_SCRIPT_URL")) {
+        console.error("Google Script URL not configured properly");
       }
       
       // Prepare the form data for Google Sheets
