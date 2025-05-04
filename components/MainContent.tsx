@@ -33,7 +33,7 @@ export default function MainContent() {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
+  const [activeSection, setActiveSection] = useState("hero");
   const [isMobile, setIsMobile] = useState(false);
 
   // Form state
@@ -175,14 +175,15 @@ export default function MainContent() {
 
       // Send data to Google Sheets
       // Fallback to a test script URL for development (replace with your script URL)
-      const googleScriptUrl = process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL || 
+      const googleScriptUrl =
+        process.env.NEXT_PUBLIC_GOOGLE_SCRIPT_URL ||
         "https://script.google.com/macros/s/AKfycbxIK7fDT00sNmIsZrFmxUQFYWBGV_uWUnrTbQYUfcz4uy-p7_KsJKc7FBlk0C8AXON/exec";
       console.log("Google Script URL:", googleScriptUrl);
-      
+
       if (googleScriptUrl.includes("YOUR_GOOGLE_SCRIPT_URL")) {
         console.error("Google Script URL not configured properly");
       }
-      
+
       // Prepare the form data for Google Sheets
       const formDataForSheets = {
         name: formData.name,
@@ -190,11 +191,11 @@ export default function MainContent() {
         attendance: formData.attendance,
         guests: formData.guests,
         dietary: formData.dietary,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       };
-      
+
       console.log("Sending data to Google Sheets:", formDataForSheets);
-      
+
       try {
         // Make fetch request to Google Apps Script web app
         // Using no-cors mode as Google Apps Script might not allow CORS from all origins
@@ -204,10 +205,12 @@ export default function MainContent() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(formDataForSheets),
-          mode: "no-cors" // Use no-cors to ensure the request is sent even if CORS is restricted
+          mode: "no-cors", // Use no-cors to ensure the request is sent even if CORS is restricted
         });
-        
-        console.log("Google Sheets request sent, but response in no-cors mode cannot be read");
+
+        console.log(
+          "Google Sheets request sent, but response in no-cors mode cannot be read"
+        );
         // Note: In no-cors mode, we can't read the response details
       } catch (sheetError) {
         console.error("Google Sheets submission error:", sheetError);
@@ -254,48 +257,58 @@ export default function MainContent() {
   };
 
   // Function to handle smooth scrolling and close mobile menu
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, sectionId: string) => {
+  const handleNavClick = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    sectionId: string
+  ) => {
     e.preventDefault();
     const element = document.getElementById(sectionId);
     if (element) {
       const offsetTop = element.offsetTop - 45; // Adjust for header height
       window.scrollTo({
         top: offsetTop,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
       setActiveSection(sectionId);
       setMobileMenuOpen(false);
     }
   };
-  
+
   // Update scroll handlers to also handle back-to-top visibility
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['hero', 'our-story', 'countdown', 'timeline', 'venues', 'dress-code'];
+      const sections = [
+        "hero",
+        "our-story",
+        "countdown",
+        "timeline",
+        "venues",
+        "dress-code",
+      ];
       const currentPosition = window.scrollY + 100; // Add offset for header
-      
+
       // Show back-to-top button when scrolled down 300px
       if (window.scrollY > 300) {
         setShowBackToTop(true);
       } else {
         setShowBackToTop(false);
       }
-      
+
       // Check if at the top of the page (hero section)
-      const ourStoryElement = document.getElementById('our-story');
+      const ourStoryElement = document.getElementById("our-story");
       if (ourStoryElement && window.scrollY < ourStoryElement.offsetTop - 100) {
-        setActiveSection('hero');
+        setActiveSection("hero");
         return;
       }
-      
+
       for (const section of sections) {
-        if (section === 'hero') continue; // Skip hero in the loop check
-        
+        if (section === "hero") continue; // Skip hero in the loop check
+
         const element = document.getElementById(section);
         if (element) {
           const top = element.offsetTop;
           const height = element.offsetHeight;
-          
+
           if (currentPosition >= top && currentPosition < top + height) {
             setActiveSection(section);
             break;
@@ -303,26 +316,22 @@ export default function MainContent() {
         }
       }
     };
-    
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-  
+
   // Function for desktop nav link class
   const getNavLinkClass = (sectionId: string) => {
     return `transition-all hover:border-b hover:border-[#5c745c] hover:pb-1 ${
-      activeSection === sectionId 
-        ? 'border-b border-[#5c745c] pb-1' 
-        : ''
+      activeSection === sectionId ? "border-b border-[#5c745c] pb-1" : ""
     }`;
   };
-  
+
   // Function for mobile nav link class
   const getMobileNavLinkClass = (sectionId: string) => {
     return `block py-1 transition-all hover:pl-2 hover:border-l-2 hover:border-[#5c745c] ${
-      activeSection === sectionId 
-        ? 'pl-2 border-l-2 border-[#5c745c]' 
-        : ''
+      activeSection === sectionId ? "pl-2 border-l-2 border-[#5c745c]" : ""
     }`;
   };
 
@@ -335,16 +344,16 @@ export default function MainContent() {
         setHeaderScrolled(false);
       }
     };
-    
-    window.addEventListener('scroll', handleHeaderScroll);
-    return () => window.removeEventListener('scroll', handleHeaderScroll);
+
+    window.addEventListener("scroll", handleHeaderScroll);
+    return () => window.removeEventListener("scroll", handleHeaderScroll);
   }, []);
 
   // Function to scroll to top
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
   };
 
@@ -353,70 +362,186 @@ export default function MainContent() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     // Check on mount
     checkMobile();
-    
+
     // Set up listener for resize
-    window.addEventListener('resize', checkMobile);
-    
+    window.addEventListener("resize", checkMobile);
+
     // Clean up
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   return (
     <div className="min-h-screen bg-sage-50">
       {/* Fixed Header */}
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${headerScrolled ? 'bg-[#f8faf8] shadow-md' : 'bg-[#f8faf8] backdrop-blur-sm'}`}>
+      <header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          headerScrolled
+            ? "bg-[#f8faf8] shadow-md"
+            : "bg-[#f8faf8] backdrop-blur-sm"
+        }`}
+      >
         <div className="container mx-auto max-w-[1440px] py-3 px-4">
           <nav className="flex items-center justify-start md:justify-center">
             <div className="md:hidden">
-              <button 
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)} 
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 className="text-sage-700 hover:text-sage-900"
                 aria-label="Toggle menu"
               >
-                {mobileMenuOpen ? 
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg> : 
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                {mobileMenuOpen ? (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
-                }
+                ) : (
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 6h16M4 12h16M4 18h16"
+                    />
+                  </svg>
+                )}
               </button>
             </div>
-            
-            
-            
+
             {/* Desktop Menu */}
             <ul className="hidden md:flex gap-6 text-sm font-primary text-sage-700">
-              <li><a href="#our-story" className={getNavLinkClass('our-story')} onClick={(e) => handleNavClick(e, 'our-story')}>Our Story</a></li>
-              <li><a href="#countdown" className={getNavLinkClass('countdown')} onClick={(e) => handleNavClick(e, 'countdown')}>Countdown</a></li>
-              <li><a href="#timeline" className={getNavLinkClass('timeline')} onClick={(e) => handleNavClick(e, 'timeline')}>Timeline</a></li>
-              <li><a href="#venues" className={getNavLinkClass('venues')} onClick={(e) => handleNavClick(e, 'venues')}>Venues</a></li>
-              <li><a href="#dress-code" className={getNavLinkClass('dress-code')} onClick={(e) => handleNavClick(e, 'dress-code')}>Dress Code</a></li>
+              <li>
+                <a
+                  href="#our-story"
+                  className={getNavLinkClass("our-story")}
+                  onClick={(e) => handleNavClick(e, "our-story")}
+                >
+                  Our Story
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#countdown"
+                  className={getNavLinkClass("countdown")}
+                  onClick={(e) => handleNavClick(e, "countdown")}
+                >
+                  Countdown
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#timeline"
+                  className={getNavLinkClass("timeline")}
+                  onClick={(e) => handleNavClick(e, "timeline")}
+                >
+                  Timeline
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#venues"
+                  className={getNavLinkClass("venues")}
+                  onClick={(e) => handleNavClick(e, "venues")}
+                >
+                  Venues
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#dress-code"
+                  className={getNavLinkClass("dress-code")}
+                  onClick={(e) => handleNavClick(e, "dress-code")}
+                >
+                  Dress Code
+                </a>
+              </li>
             </ul>
           </nav>
-          
+
           {/* Mobile Menu */}
           {mobileMenuOpen && (
             <div className="md:hidden py-3 border-t border-sage-100">
               <ul className="flex flex-col space-y-3 text-sm font-primary text-sage-700">
-                <li><a href="#our-story" className={getMobileNavLinkClass('our-story')} onClick={(e) => handleNavClick(e, 'our-story')}>Our Story</a></li>
-                <li><a href="#countdown" className={getMobileNavLinkClass('countdown')} onClick={(e) => handleNavClick(e, 'countdown')}>Countdown</a></li>
-                <li><a href="#timeline" className={getMobileNavLinkClass('timeline')} onClick={(e) => handleNavClick(e, 'timeline')}>Timeline</a></li>
-                <li><a href="#venues" className={getMobileNavLinkClass('venues')} onClick={(e) => handleNavClick(e, 'venues')}>Venues</a></li>
-                <li><a href="#dress-code" className={getMobileNavLinkClass('dress-code')} onClick={(e) => handleNavClick(e, 'dress-code')}>Dress Code</a></li>
+                <li>
+                  <a
+                    href="#our-story"
+                    className={getMobileNavLinkClass("our-story")}
+                    onClick={(e) => handleNavClick(e, "our-story")}
+                  >
+                    Our Story
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#countdown"
+                    className={getMobileNavLinkClass("countdown")}
+                    onClick={(e) => handleNavClick(e, "countdown")}
+                  >
+                    Countdown
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#timeline"
+                    className={getMobileNavLinkClass("timeline")}
+                    onClick={(e) => handleNavClick(e, "timeline")}
+                  >
+                    Timeline
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#venues"
+                    className={getMobileNavLinkClass("venues")}
+                    onClick={(e) => handleNavClick(e, "venues")}
+                  >
+                    Venues
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#dress-code"
+                    className={getMobileNavLinkClass("dress-code")}
+                    onClick={(e) => handleNavClick(e, "dress-code")}
+                  >
+                    Dress Code
+                  </a>
+                </li>
+                <li>
+                  <Button
+                    onClick={() => setShowRSVPModal(true)}
+                    className="px-10 py-3 bg-sage-600 text-white rounded-full border-none text-lg font-light tracking-widest transition-all hover:bg-sage-700 shadow-md hover:shadow-lg"
+                    style={{ width: "160px" }}
+                  >
+                    RSVP
+                  </Button>
+                </li>
               </ul>
             </div>
           )}
         </div>
       </header>
-      
+
       {/* Add padding to account for fixed header */}
       <div className="pt-12"></div>
-      
+
       {/* Hero Section */}
       <section
         className="relative bg-[#f8faf8] py-10 md:min-h-screen"
@@ -532,11 +657,12 @@ export default function MainContent() {
             </p>
             <br />
             <p>
-              We spend most summers out on the sea, chasing sunshine, and
-              occasionally pretending we're professional boat people. We're also
-              into spontaneous road trips, off-roading for no reason, and
-              exploring new countries, Switzerland being a favorite, and the
-              scene also where we got engaged.
+              We spend most summers out at sea, chasing the sun and occasionally
+              pretending we're professional boat people. When we're not on the
+              water, we're going on spontaneous car rides with the windows down
+              or off-roading just for the fun of it. We love exploring new
+              countries, Switzerland's a favorite and it's also where we got
+              engaged.
             </p>
             <br />
             <p>
@@ -608,7 +734,7 @@ export default function MainContent() {
                     src="/images/roberta-22.jpg"
                     alt="Bride"
                     fill
-                    className="object-cover object-center transition-all duration-500 hover:grayscale"
+                    className="object-cover object-center transition-all duration-500"
                   />
                 </div>
               </div>
@@ -626,7 +752,7 @@ export default function MainContent() {
                     src="/images/michael-222.jpg"
                     alt="Groom"
                     fill
-                    className="object-cover object-center transition-all duration-500 hover:grayscale"
+                    className="object-cover object-center transition-all duration-500"
                   />
                 </div>
               </div>
@@ -636,7 +762,10 @@ export default function MainContent() {
       </section>
 
       {/* Countdown Section */}
-      <section className="relative bg-sage-100 py-20 overflow-hidden" id="countdown">
+      <section
+        className="relative bg-sage-100 py-20 overflow-hidden"
+        id="countdown"
+      >
         <div className="absolute inset-0 opacity-5">
           <div className="absolute left-1/4 top-1/4 h-40 w-40 rounded-full border border-sage-300"></div>
           <div className="absolute right-1/4 bottom-1/4 h-60 w-60 rounded-full border border-sage-300"></div>
@@ -671,22 +800,22 @@ export default function MainContent() {
       </section>
 
       {/* Timeline Section */}
-      <section 
-        className="relative bg-white py-32 md:py-40" 
+      <section
+        className="relative bg-white py-32 md:py-40"
         id="timeline"
         style={{
-          backgroundImage: isMobile 
-            ? "url('/images/mike-and-rob-mobile.jpg')" 
+          backgroundImage: isMobile
+            ? "url('/images/mike-and-rob-mobile.jpg')"
             : "url('/images/mike-and-rob-1.jpg')",
           backgroundSize: "cover",
           backgroundPosition: "center 30%",
           backgroundRepeat: "no-repeat",
-          minHeight: "900px"
+          minHeight: "900px",
         }}
       >
         {/* Dark overlay for better text contrast */}
         <div className="absolute inset-0 bg-black/40"></div>
-        
+
         <div className="container mx-auto max-w-[70%] px-4 relative z-10">
           <div className="pt-0 md:pt-2 pb-16">
             <h2 className="mb-3 leading-none text-center font-script text-[70px] font-light tracking-wide text-white whitespace-nowrap">
@@ -726,7 +855,10 @@ export default function MainContent() {
 
                     <div className="relative z-10 flex h-14 w-14 min-h-[56px] min-w-[56px] items-center justify-center rounded-full bg-white/95 border border-white/30 shadow-md">
                       <div className="flex items-center justify-center">
-                        <item.icon className="h-7 w-7 text-sage-700" strokeWidth={1} />
+                        <item.icon
+                          className="h-7 w-7 text-sage-700"
+                          strokeWidth={1}
+                        />
                       </div>
                     </div>
 
@@ -763,7 +895,10 @@ export default function MainContent() {
 
                     <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-white/95 border border-white/30 mb-8 shadow-md">
                       <div className="flex items-center justify-center">
-                        <item.icon className="h-8 w-8 text-sage-700" strokeWidth={1} />
+                        <item.icon
+                          className="h-8 w-8 text-sage-700"
+                          strokeWidth={1}
+                        />
                       </div>
                     </div>
 
@@ -1139,12 +1274,23 @@ export default function MainContent() {
       <button
         onClick={scrollToTop}
         className={`fixed bottom-6 right-6 z-50 p-3 rounded-full bg-sage-600 text-white shadow-lg transition-all duration-300 hover:bg-sage-700 ${
-          showBackToTop ? 'opacity-100 visible' : 'opacity-0 invisible'
+          showBackToTop ? "opacity-100 visible" : "opacity-0 invisible"
         }`}
         aria-label="Back to top"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 10l7-7m0 0l7 7m-7-7v18"
+          />
         </svg>
       </button>
     </div>
