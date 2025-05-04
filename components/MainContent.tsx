@@ -34,6 +34,7 @@ export default function MainContent() {
   const [touchEnd, setTouchEnd] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
+  const [isMobile, setIsMobile] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -59,15 +60,15 @@ export default function MainContent() {
 
   const carouselImages = [
     {
-      src: "/images/img-111.jpg",
+      src: "/images/img-1111.jpg",
       alt: "Img 1",
     },
     {
-      src: "/images/img22.jpg",
+      src: "/images/img-2222.jpg",
       alt: "Img 2",
     },
     {
-      src: "/images/img-222.jpg",
+      src: "/images/img-22.jpg",
       alt: "Img 3",
     },
   ];
@@ -79,7 +80,7 @@ export default function MainContent() {
   }, [carouselImages.length]);
 
   useEffect(() => {
-    const interval = setInterval(nextSlide, 5000);
+    const interval = setInterval(nextSlide, 3000);
     return () => clearInterval(interval);
   }, [nextSlide]);
 
@@ -302,6 +303,22 @@ export default function MainContent() {
     });
   };
 
+  // Check if screen is mobile width for background image
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Check on mount
+    checkMobile();
+    
+    // Set up listener for resize
+    window.addEventListener('resize', checkMobile);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   return (
     <div className="min-h-screen bg-sage-50">
       {/* Fixed Header */}
@@ -360,9 +377,9 @@ export default function MainContent() {
         className="relative bg-[#f8faf8] py-10 md:min-h-screen"
         id="hero"
       >
-        <div className="container mx-auto max-w-[1440px] flex flex-col items-center px-4 md:min-h-[90vh] md:flex-row">
+        <div className="container mx-auto max-w-[1440px] flex flex-col items-center px-4 md:min-h-[90vh] md:flex-col lg:flex-row">
           {/* Left Side - Text */}
-          <div className="flex w-full text-center flex-col justify-center md:mb-0 md:w-[25%] md:pr-8 mt-8 md:relative md:z-0 absolute z-10 inset-0 flex items-center justify-center md:items-start md:justify-start">
+          <div className="flex w-full text-center flex-col justify-center md:mb-8 lg:mb-0 md:w-full lg:w-[25%] md:pr-0 lg:pr-8 mt-8 lg:relative z-10 absolute lg:static inset-0 flex items-center justify-center md:static lg:items-start md:justify-center lg:justify-start">
             <h1 className="flex flex-col space-y-10 font-primary w-full text-5xl font-thin tracking-wide text-white md:text-[#4C5D46] md:text-7xl lg:text-6xl">
               ROBERTA
               <div className="font-script text-4xl font-light tracking-widest text-white md:text-gray-500 md:text-5xl lg:text-6xl">
@@ -392,7 +409,7 @@ export default function MainContent() {
           </div>
 
           {/* Right Side - Images */}
-          <div className="w-full md:w-[75%]">
+          <div className="w-full md:w-full lg:w-[75%]">
             {/* Desktop Images */}
             <div className="hidden md:grid grid-cols-3 gap-3 md:gap-6">
               {carouselImages.map((image, index) => (
@@ -435,7 +452,7 @@ export default function MainContent() {
                         src={image.src}
                         alt={image.alt}
                         fill
-                        className="object-cover object-center grayscale transition-all duration-500 hover:grayscale-0"
+                        className="object-cover object-center transition-all duration-500"
                       />
                       {/* Dark overlay with matching border radius */}
                       <div className="absolute inset-0 bg-black/50 rounded-t-full transition-opacity duration-500 group-hover:opacity-30"></div>
@@ -512,20 +529,20 @@ export default function MainContent() {
                 {/* Bride Image */}
                 <div className="relative h-[550px] w-[336px] overflow-hidden rounded-[200px]">
                   <Image
-                    src="/images/img11.jpeg"
+                    src="/images/roberta-22.jpg"
                     alt="Bride"
                     fill
-                    className="object-cover object-center"
+                    className="object-cover object-center transition-all duration-500 hover:grayscale"
                   />
                 </div>
 
                 {/* Groom Image */}
                 <div className="relative h-[550px] w-[336px] overflow-hidden rounded-[200px]">
                   <Image
-                    src="/images/img44.jpeg"
+                    src="/images/michael-222.jpg"
                     alt="Groom"
                     fill
-                    className="object-cover object-center"
+                    className="object-cover object-center transition-all duration-500 hover:grayscale"
                   />
                 </div>
               </div>
@@ -541,12 +558,12 @@ export default function MainContent() {
                 <p className="mb-6 font-primary text-sm tracking-widest text-sage-600">
                   Bride
                 </p>
-                <div className="relative h-[450px] w-[300px] overflow-hidden rounded-[200px]">
+                <div className="relative h-[500px] w-[300px] overflow-hidden rounded-[200px]">
                   <Image
-                    src="/images/img11.jpeg"
+                    src="/images/roberta-22.jpg"
                     alt="Bride"
                     fill
-                    className="object-cover object-center"
+                    className="object-cover object-center transition-all duration-500 hover:grayscale"
                   />
                 </div>
               </div>
@@ -559,12 +576,12 @@ export default function MainContent() {
                 <p className="mb-6 font-primary text-sm tracking-widest text-sage-600">
                   Groom
                 </p>
-                <div className="relative h-[450px] w-[300px] overflow-hidden rounded-[200px]">
+                <div className="relative h-[500px] w-[300px] overflow-hidden rounded-[200px]">
                   <Image
-                    src="/images/img44.jpeg"
+                    src="/images/michael-222.jpg"
                     alt="Groom"
                     fill
-                    className="object-cover object-center"
+                    className="object-cover object-center transition-all duration-500 hover:grayscale"
                   />
                 </div>
               </div>
@@ -609,48 +626,67 @@ export default function MainContent() {
       </section>
 
       {/* Timeline Section */}
-      <section className="bg-white py-20" id="timeline">
-        <div className="container mx-auto max-w-[70%] px-4">
-          <h2 className="mb-3 text-center font-script text-[70px] font-light tracking-wide text-sage-800">
-            On the Day
-          </h2>
-          <p className="mx-auto mb-12 max-w-xl text-center font-primary text-sage-500">
-            Schedule of events for our celebration
-          </p>
+      <section 
+        className="relative bg-white py-32 md:py-40" 
+        id="timeline"
+        style={{
+          backgroundImage: isMobile 
+            ? "url('/images/mike-and-rob-mobile.jpg')" 
+            : "url('/images/mike-and-rob-1.jpg')",
+          backgroundSize: "cover",
+          backgroundPosition: "center 30%",
+          backgroundRepeat: "no-repeat",
+          minHeight: "900px"
+        }}
+      >
+        {/* Dark overlay for better text contrast */}
+        <div className="absolute inset-0 bg-black/40"></div>
+        
+        <div className="container mx-auto max-w-[70%] px-4 relative z-10">
+          <div className="pt-0 md:pt-2 pb-16">
+            <h2 className="mb-3 leading-none text-center font-script text-[70px] font-light tracking-wide text-white whitespace-nowrap">
+              On the Day
+            </h2>
+            <p className="mx-auto max-w-xl text-center font-primary text-white/90">
+              Schedule of events for our celebration
+            </p>
+          </div>
 
           {/* Horizontal Timeline (vertical on mobile) */}
           <div className="mx-auto max-w-5xl">
             {/* Mobile Timeline (vertical) */}
             <div className="md:hidden relative">
               {/* Timeline Line */}
-              <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-sage-200"></div>
+              <div className="absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/50"></div>
 
               <div className="space-y-12">
                 {[
                   { time: "16:00", event: "Ceremony", icon: ChurchIcon },
                   { time: "17:00", event: "Prosecco", icon: Martini },
-                  { time: "18:00", event: "Arrival at Venue", icon: Castle },
-                  { time: "21:15", event: "Cake Cutting", icon: Cake },
-                  { time: "21:30", event: "First Dance", icon: PartyPopper },
-                  { time: "23:00", event: "After Party", icon: MoonStar },
-                  { time: "01:00", event: "Fairwell", icon: Car },
+                  { time: "18:00", event: "Arrival at\nVenue", icon: Castle },
+                  { time: "21:15", event: "Cake\nCutting", icon: Cake },
+                  { time: "21:30", event: "First\nDance", icon: PartyPopper },
+                  { time: "23:00", event: "After\nParty", icon: MoonStar },
+                  { time: "01:00", event: "Farewell", icon: Car },
                 ].map((item, index) => (
                   <div
                     key={item.event}
                     className="flex items-center justify-center"
                   >
-                    <div className="w-[45%] text-right pr-8">
-                      <div className="text-lg font-light text-sage-800">
+                    <div className="w-[40%] text-right pr-6">
+                      <div className="text-lg font-light text-white">
                         {item.time}
                       </div>
                     </div>
 
-                    <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border border-sage-300">
-                      <item.icon className="h-5 w-5 text-sage-700" />
+                    <div className="relative z-10 flex h-14 w-14 min-h-[56px] min-w-[56px] items-center justify-center rounded-full bg-white/95 border border-white/30 shadow-md">
+                      <div className="flex items-center justify-center">
+                        <item.icon className="h-7 w-7 text-sage-700" strokeWidth={1} />
+                      </div>
                     </div>
 
-                    <div className="w-[45%] text-left pl-8">
-                      <div className="text-lg font-normal tracking-wider text-sage-800">
+                    <div className="w-[40%] text-left pl-6">
+                      <div className="text-base font-normal tracking-wider text-white whitespace-pre-line">
                         {item.event}
                       </div>
                     </div>
@@ -662,7 +698,7 @@ export default function MainContent() {
             {/* Desktop Timeline (horizontal) */}
             <div className="hidden md:block relative py-8">
               {/* Horizontal Timeline Line */}
-              <div className="absolute top-1/2 left-0 right-0 h-px w-[90%] mx-auto -translate-y-1/2 bg-sage-200"></div>
+              <div className="absolute top-1/2 left-0 right-0 h-px w-[90%] mx-auto -translate-y-1/2 bg-white/50"></div>
               <div className="flex justify-between">
                 {[
                   { time: "16:00", event: "Ceremony", icon: ChurchIcon },
@@ -675,17 +711,19 @@ export default function MainContent() {
                 ].map((item, index) => (
                   <div key={item.event} className="flex flex-col items-center">
                     <div className="text-center mb-8">
-                      <div className="text-lg font-light text-sage-800">
+                      <div className="text-lg font-light text-white">
                         {item.time}
                       </div>
                     </div>
 
-                    <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white border border-sage-300 mb-8">
-                      <item.icon className="h-5 w-5 text-sage-700" />
+                    <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-white/95 border border-white/30 mb-8 shadow-md">
+                      <div className="flex items-center justify-center">
+                        <item.icon className="h-8 w-8 text-sage-700" strokeWidth={1} />
+                      </div>
                     </div>
 
                     <div className="text-center">
-                      <div className="text-sm font-normal tracking-wider text-sage-800">
+                      <div className="text-sm font-normal tracking-wider text-white">
                         {item.event}
                       </div>
                     </div>
@@ -1040,27 +1078,6 @@ export default function MainContent() {
               Roberta & Michael
             </h2>
             <p className="mt-2 font-primary text-sage-300">June 21st, 2025</p>
-          </div>
-
-          <div className="mb-8 flex justify-center space-x-6">
-            <a
-              href="#"
-              className="rounded-full bg-sage-700 p-3 text-white transition-all duration-300 hover:bg-sage-600"
-            >
-              <Heart className="h-5 w-5" />
-            </a>
-            <a
-              href="#"
-              className="rounded-full bg-sage-700 p-3 text-white transition-all duration-300 hover:bg-sage-600"
-            >
-              <Mail className="h-5 w-5" />
-            </a>
-            <a
-              href="#"
-              className="rounded-full bg-sage-700 p-3 text-white transition-all duration-300 hover:bg-sage-600"
-            >
-              <Calendar className="h-5 w-5" />
-            </a>
           </div>
 
           <p className="text-center text-sm font-primary text-sage-400">
