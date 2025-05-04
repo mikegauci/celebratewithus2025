@@ -9,10 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
-  Calendar,
   ChurchIcon,
-  Heart,
-  Mail,
   Martini,
   Castle,
   Cake,
