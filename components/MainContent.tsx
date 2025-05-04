@@ -505,7 +505,7 @@ export default function MainContent() {
             {/* Desktop Layout */}
             <div className="hidden md:block">
               {/* Left bride name */}
-              <div className="absolute left-8 top-1/2 -translate-y-1/2 text-center">
+              <div className="absolute z-10 left-8 top-1/2 -translate-y-1/2 text-center">
                 <h3 className="mb-3 font-script text-6xl font-light text-sage-800">
                   Roberta
                 </h3>
@@ -515,7 +515,7 @@ export default function MainContent() {
               </div>
 
               {/* Right groom name */}
-              <div className="absolute right-8 top-1/2 -translate-y-1/2 text-center">
+              <div className="absolute z-10 right-8 top-1/2 -translate-y-1/2 text-center">
                 <h3 className="mb-3 font-script text-6xl font-light text-sage-800">
                   Michael
                 </h3>
