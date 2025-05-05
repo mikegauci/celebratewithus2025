@@ -21,5 +21,9 @@ export type GuestData = {
 
 export default function GuestPage({ params }: { params: { slug: string } }) {
   const guestData = getGuestBySlug(params.slug);
-  return <GuestPageClient slug={params.slug} companion={guestData?.companion} />;
+  return <GuestPageClient 
+    slug={params.slug} 
+    displayName={guestData?.displayName}
+    companion={guestData?.companion} 
+  />;
 }

@@ -7,7 +7,15 @@ import dynamic from "next/dynamic";
 const InvitationEnvelope = dynamic(() => import("@/components/InvitationEnvelope"));
 const MainContent = dynamic(() => import("@/components/MainContent"));
 
-export default function GuestPageClient({ slug, companion }: { slug: string; companion?: string }) {
+export default function GuestPageClient({ 
+  slug, 
+  displayName,
+  companion 
+}: { 
+  slug: string; 
+  displayName?: string;
+  companion?: string; 
+}) {
   const [isEnvelopeOpened, setIsEnvelopeOpened] = useState(false);
   const [showMainContent, setShowMainContent] = useState(false);
 
@@ -15,7 +23,7 @@ export default function GuestPageClient({ slug, companion }: { slug: string; com
     <main className="min-h-screen bg-sage-50">
       {!showMainContent ? (
         <InvitationEnvelope
-          guestName={slug}
+          guestName={displayName || slug}
           companion={companion}
           isOpened={isEnvelopeOpened}
           onOpen={() => setIsEnvelopeOpened(true)}

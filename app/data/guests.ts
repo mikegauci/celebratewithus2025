@@ -1,6 +1,7 @@
 // Define guest data type
 export type GuestData = {
   slug: string;
+  displayName?: string;
   companion?: string;
 };
 
@@ -37,6 +38,7 @@ export const guestList: GuestData[] = [
   { slug: 'isaac' },
   { slug: 'raphael' },
   { slug: 'daniela', companion: 'Andrew' },
+  { slug: 'daniela-calleja', displayName: 'Daniela', companion: 'Bobby' },
   { slug: 'matthew' },
   { slug: 'andrea' },
   { slug: 'fredrick' },
