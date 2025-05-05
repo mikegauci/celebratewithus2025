@@ -9,7 +9,7 @@ export const guestList: GuestData[] = [
   { slug: 'angelique' },
   { slug: 'joseph' },
   { slug: 'nicole' },
-  { slug: 'javier' },
+  { slug: 'javier', companion: 'Juan' },
   { slug: 'yuan' },
   { slug: 'betty' },
   { slug: 'maria' },
