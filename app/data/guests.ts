@@ -49,7 +49,7 @@ export const guestList: GuestData[] = [
   { slug: 'jake', companion: 'Sarah' },
   { slug: 'harry', companion: 'Maria' },
   { slug: 'alex', companion: 'Lucia' },
-  { slug: 'nat' },
+  { slug: 'nathaniel' },
   { slug: 'stanislav', companion: 'Caterine' },
   { slug: 'adil' },
   { slug: 'kate', companion: 'Marian' },
