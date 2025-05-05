@@ -31,6 +31,7 @@ export const guestList: GuestData[] = [
   { slug: 'ryan' },
   { slug: 'darren' },
   { slug: 'jeremy' },
+  { slug: 'marco' },
   { slug: 'sky' },
   { slug: 'monica', companion: 'Simon' },
   { slug: 'daniel' },
