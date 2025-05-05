@@ -52,7 +52,7 @@ export const guestList: GuestData[] = [
   { slug: 'nathaniel' },
   { slug: 'stanislav', companion: 'Caterine' },
   { slug: 'adil' },
-  { slug: 'kate', companion: 'Marian' },
+  { slug: 'ecaterina', companion: 'Marian' },
   { slug: 'valerio', companion: 'Ann' },
   { slug: 'chris', companion: 'Leah' },
   { slug: 'eddie' },
