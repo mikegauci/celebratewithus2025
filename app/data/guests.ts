@@ -75,6 +75,19 @@ export const guestList: GuestData[] = [
   { slug: 'silvan', companion: 'Maria' },
   { slug: 'lexi', companion: 'Dorianne' },
   { slug: 'nathaniel-portelli', displayName: 'Nathaniel', companion: 'Jessica' },
+  { slug: 'christian' },
+  { slug: 'magali' },
+  { slug: 'morgan' },
+  { slug: 'rishabh' },
+  { slug: 'sylwia' },
+  { slug: 'thomas' },
+  { slug: 'andrea' },
+  { slug: 'adrian' },
+  { slug: 'oiseje' },
+  { slug: 'junjie' },
+  { slug: 'mauro' },
+  { slug: 'abigail' },
+  { slug: 'james' },
 ];
 
 // Helper function to find a guest by slug
